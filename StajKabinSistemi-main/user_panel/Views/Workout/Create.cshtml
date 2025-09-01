@@ -1,0 +1,113 @@
+﻿@model WorkoutCreateViewModel
+
+@{
+    ViewData["Title"] = "Create Workout Plan";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/adminIndex.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-papXQ7+I5Zz+..." crossorigin="anonymous" referrerpolicy="no-referrer" />
+}
+
+<div class="container">
+    <div class="card-custom">
+        <h2><i class="fa-solid fa-dumbbell"></i> Create Workout Plan</h2>
+        <h4 class="mt-4">Design your custom workout</h4>
+
+        @if (TempData["StatusMessage"] != null)
+        {
+            <div class="alert alert-success mt-3" role="alert">
+                @TempData["StatusMessage"]
+            </div>
+        }
+
+        <form asp-action="Create" method="post" id="workout-form" class="mt-4" enctype="multipart/form-data" autocomplete="off">
+            @Html.AntiForgeryToken()
+
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <div class="form-group">
+                <label class="text-white"><i class="fa-solid fa-signature"></i> Workout Name</label>
+                <input asp-for="WorkoutName" class="form-control" />
+                <span asp-validation-for="WorkoutName" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label class="text-white"><i class="fa-solid fa-image"></i> Workout Preview (Text)</label>
+                <input asp-for="WorkoutPreview" class="form-control" />
+                <small class="form-text text-muted">Örn: “Upper Body – Push Focus”</small>
+                <span asp-validation-for="WorkoutPreview" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label class="text-white"><i class="fa-solid fa-align-left"></i> Workout Details</label>
+                <textarea asp-for="WorkoutDetails" class="form-control" rows="4"></textarea>
+                <span asp-validation-for="WorkoutDetails" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mt-4">
+                <label class="text-white"><i class="fa-solid fa-list-check"></i> Select Exercises</label>
+                <select asp-for="SelectedExerciseIds"
+                        asp-items="@(new MultiSelectList(Model?.Exercises ?? new List<ExercisePreviewViewModel>(), "ExerciseId", "ExerciseName"))"
+                        class="form-control selectpicker"
+                        data-live-search="true"
+                        data-actions-box="true"
+                        multiple
+                        title="Select exercises...">
+                </select>
+                <span asp-validation-for="SelectedExerciseIds" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label class="text-white"><i class="fa-solid fa-image"></i> Upload Image</label>
+                <input asp-for="WorkoutImage" type="file" class="form-control" accept="image/*" id="workoutImageInput" />
+                <small class="form-text text-muted">Sadece görsel dosyaları. (Örn: .jpg, .png)</small>
+                <span asp-validation-for="WorkoutImage" class="text-danger"></span>
+
+                <div class="mt-3" id="imagePreviewWrapper" style="display:none;">
+                    <img id="imagePreview" alt="Preview" class="img-fluid rounded" style="max-height:240px; object-fit:cover;" />
+                </div>
+            </div>
+
+            <div class="mt-4 d-flex gap-3">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fa-solid fa-check"></i> Save Plan
+                </button>
+                <a asp-action="Index" asp-controller="Admin" class="btn btn-secondary">
+                    <i class="fa-solid fa-arrow-left"></i> Back to Admin Panel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        // Otomatik submit olmasın; sadece preview yap
+        (function () {
+            const input = document.getElementById('workoutImageInput');
+            const previewWrapper = document.getElementById('imagePreviewWrapper');
+            const previewImg = document.getElementById('imagePreview');
+
+            if (input) {
+                input.addEventListener('change', function (e) {
+                    const file = this.files && this.files[0];
+                    if (!file) {
+                        previewWrapper.style.display = 'none';
+                        previewImg.src = '';
+                        return;
+                    }
+                    const url = URL.createObjectURL(file);
+                    previewImg.src = url;
+                    previewWrapper.style.display = 'block';
+                });
+            }
+
+            // selectpicker kullanıyorsan init et (yüklü değilse hata vermez)
+            if (typeof $ !== 'undefined' && $.fn.selectpicker) {
+                $('.selectpicker').selectpicker();
+            }
+        })();
+    </script>
+}

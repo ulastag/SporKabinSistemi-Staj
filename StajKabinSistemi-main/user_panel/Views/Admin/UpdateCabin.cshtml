@@ -1,0 +1,123 @@
+﻿@model IEnumerable<user_panel.Data.Cabin>
+
+@{
+    ViewData["Title"] = "Update Existing Cabin";
+}
+
+<div class="container container-main-large">
+    <div class="card-custom">
+        <h2>Update Existing Cabin</h2>
+        <h4 class="mt-4">Available Cabins:</h4>
+        <hr style="border-color: var(--border-color);" />
+
+        @if (TempData["StatusMessage"] != null)
+        {
+            <div class="alert alert-info mt-3" role="alert">
+                @TempData["StatusMessage"]
+            </div>
+        }
+
+        @if (Model == null || !Model.Any())
+        {
+            <p class="text-muted mt-3">No cabins found. Please add some first.</p>
+            <a asp-action="AddCabin" asp-controller="Admin" class="btn btn-success mt-3">
+                <i class="bi bi-plus-circle me-2"></i> Add New Cabin
+            </a>
+        }
+        else
+        {
+            <div class="mb-3">
+                <label for="citySelect" class="form-label">City</label>
+                <select id="citySelect" class="form-select">
+                    <option value="">-- Select City --</option>
+                    @foreach (var city in ViewBag.Cities as List<SelectListItem>)
+                    {
+                        <option value="@city.Value">@city.Text</option>
+                    }
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label for="districtSelect" class="form-label">District</label>
+                <select id="districtSelect" class="form-select">
+                    <option value="">-- Select District --</option>
+                </select>
+            </div>
+
+
+            <div class="cabin-list mt-4" id="cabinContainer">
+                @await Html.PartialAsync("_UpdateCabinTable", Model)
+            </div>
+        }
+
+        <div class="mt-4">
+            <a asp-action="Index" asp-controller="Admin" class="btn btn-secondary">
+                <i class="bi bi-arrow-left me-2"></i> Back to Admin Panel
+            </a>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const citySelect = document.getElementById("citySelect");
+        const districtSelect = document.getElementById("districtSelect");
+        const cabinList = document.getElementById("cabinContainer");
+
+        citySelect?.addEventListener("change", function () {
+            const cityId = this.value;
+            districtSelect.innerHTML = '<option value="">-- Select District --</option>';
+
+            if (!cityId) {
+                // No city selected -> show all cabins
+                fetch(`/Admin/GetAllCabinsForFilter`)
+                    .then(res => res.text())
+                    .then(html => cabinList.innerHTML = html);
+                return;
+            }
+
+            // City selected -> load districts for city
+            fetch(`/Admin/GetDistrictsByCity/${cityId}`)
+                .then(res => res.json())
+                .then(data => {
+                    data.forEach(d => {
+                        const option = document.createElement("option");
+                        option.value = d.value;
+                        option.text = d.text;
+                        districtSelect.appendChild(option);
+                    });
+                });
+
+            // Show cabins filtered by city only (district not selected yet)
+            fetch(`/Admin/GetCabinsByCity?cityId=${cityId}`)
+                .then(res => res.text())
+                .then(html => cabinList.innerHTML = html);
+        });
+
+        districtSelect?.addEventListener("change", function () {
+            const districtId = this.value;
+            const cityId = citySelect.value;
+
+            if (!districtId) {
+                // District unselected -> show cabins by city (or all if no city)
+                if (cityId) {
+                    fetch(`/Admin/GetCabinsByCity?cityId=${cityId}`)
+                        .then(res => res.text())
+                        .then(html => cabinList.innerHTML = html);
+                } else {
+                    fetch(`/Admin/GetAllCabinsForFilter`)
+                        .then(res => res.text())
+                        .then(html => cabinList.innerHTML = html);
+                }
+                return;
+            }
+
+            // Both city and district selected -> filter cabins by district only
+            fetch(`/Admin/GetCabinsByDistrict?districtId=${districtId}`)
+                .then(res => res.text())
+                .then(html => cabinList.innerHTML = html);
+        });
+
+    </script>
+}
+

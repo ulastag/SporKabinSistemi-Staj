@@ -1,0 +1,78 @@
+﻿@model WorkoutUpdateViewModel
+
+@{
+    ViewData["Title"] = "Update Workout Plan";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/adminIndex.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-papXQ7+I5Zz+..." crossorigin="anonymous" referrerpolicy="no-referrer" />
+}
+
+<div class="container">
+    <div class="card-custom">
+        <h2><i class="fa-solid fa-dumbbell"></i> Update Workout Plan</h2>
+        <h4 class="mt-4">Modify existing workout details</h4>
+
+        @if (TempData["StatusMessage"] != null)
+        {
+            <div class="alert alert-success mt-3" role="alert">
+                @TempData["StatusMessage"]
+            </div>
+        }
+
+        <form asp-action="Update" method="post" id="workout-form" class="mt-4">
+            <input type="hidden" asp-for="WorkoutId" />
+
+            <div class="form-group">
+                <label class="text-white"><i class="fa-solid fa-signature"></i> Workout Name</label>
+                <input asp-for="WorkoutName" class="form-control" />
+                <span asp-validation-for="WorkoutName" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label class="text-white"><i class="fa-solid fa-image"></i> Workout Preview</label>
+                @if (!string.IsNullOrEmpty(Model.WorkoutImage))
+                {
+                    <div class="mb-3">
+                        <img src="@Model.WorkoutImage" alt="Workout Image" class="img-fluid" style="max-height: 200px; border-radius: 5px;" />
+                    </div>
+                }
+                <input asp-for="WorkoutUpdatedImage" class="form-control" />
+                <span asp-validation-for="WorkoutUpdatedImage" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label class="text-white"><i class="fa-solid fa-align-left"></i> Workout Details</label>
+                <textarea asp-for="WorkoutDetails" class="form-control"></textarea>
+                <span asp-validation-for="WorkoutDetails" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mt-4">
+                <label class="text-white"><i class="fa-solid fa-list-check"></i> Select Exercises</label>
+                <select asp-for="SelectedExerciseIds"
+                        asp-items="@(new MultiSelectList(Model.AvailableExercises, "ExerciseId", "ExerciseName", Model.SelectedExerciseIds))"
+                        class="form-control selectpicker"
+                        data-live-search="true"
+                        data-actions-box="true"
+                        multiple
+                        title="Select exercises...">
+                </select>
+                <span asp-validation-for="SelectedExerciseIds" class="text-danger"></span>
+            </div>
+
+            <div class="mt-4 d-flex gap-3">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fa-solid fa-check"></i> Update Plan
+                </button>
+                <a asp-action="Index" asp-controller="Admin" class="btn btn-secondary">
+                    <i class="fa-solid fa-arrow-left"></i> Back to Admin Panel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

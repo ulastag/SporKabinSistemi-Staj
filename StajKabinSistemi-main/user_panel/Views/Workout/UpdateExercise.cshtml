@@ -1,0 +1,93 @@
+﻿@model ExerciseUpdateViewModel
+@{
+    ViewData["Title"] = "Update Exercise";
+}
+
+<div class="container mt-4">
+    <div class="justify-content-center">
+        <!-- Orta sütun -->
+        <div class="col-md-6 offset-md-3">
+
+            <h2 class="text-white text-center mb-4">Update Exercise</h2>
+
+            <form asp-action="UpdateExercise" method="post">
+                <input type="hidden" asp-for="ExerciseId" />
+
+                <!-- NAME -->
+                <div class="form-group">
+                    <label class="text-white">Exercise Name</label>
+                    <input asp-for="ExerciseName" class="form-control" />
+                    <span asp-validation-for="ExerciseName" class="text-danger"></span>
+                </div>
+
+                <!-- DETAILS -->
+                <div class="form-group">
+                    <label class="text-white">Exercise Details</label>
+                    <textarea asp-for="ExerciseDetails" class="form-control"></textarea>
+                    <span asp-validation-for="ExerciseDetails" class="text-danger"></span>
+                </div>
+
+                <!-- STEPS -->
+                <div class="form-group">
+                    <label class="text-white">Steps</label>
+
+                    <div id="step-list">
+                        @for (int i = 0; i < (Model.Steps?.Count ?? 0); i++) {
+                            <div class="input-group mb-2 step-row">
+                                <input name="Steps[@i]" value="@Model.Steps[i]" class="form-control" />
+                                <button type="button" class="btn btn-danger" onclick="removeStep(this)">
+                                    <i class="fa-solid fa-xmark"></i>
+                                </button>
+                            </div>
+                        }
+                    </div>
+
+                    <button type="button"
+                            class="btn btn-sm btn-secondary mt-2"
+                            onclick="addStep()">
+                        + Add Step
+                    </button>
+                </div>
+
+                <!-- BUTTONS -->
+                <div class="text-center mt-4">
+                    <button type="submit" class="btn btn-primary">Update Exercise</button>
+                    <a asp-action="ManageExercise"
+                       asp-controller="Workout"
+                       class="btn btn-secondary ml-2">Back</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        let stepIndex = @(Model.Steps?.Count ?? 0);
+
+        function addStep() {
+            const html = `
+                <div class="input-group mb-2 step-row">
+                    <input name="Steps[${stepIndex}]" class="form-control"
+                           data-val="true" data-val-required="Adım boş bırakılamaz." />
+                    <button type="button" class="btn btn-danger" onclick="removeStep(this)">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>`;
+            document.getElementById('step-list').insertAdjacentHTML('beforeend', html);
+            stepIndex++;
+        }
+
+        function removeStep(btn) {
+            btn.closest('.step-row').remove();
+            renumber();
+        }
+
+        function renumber() {
+            const rows = document.querySelectorAll('#step-list .step-row input');
+            rows.forEach((inp, idx) => inp.name = `Steps[${idx}]`);
+            stepIndex = rows.length;
+        }
+    </script>
+}

@@ -1,0 +1,169 @@
+﻿@model user_panel.ViewModels.CabinDetailViewModel
+@{
+    ViewData["Title"] = Model.Cabin.Description;
+}
+
+<!-- === YILDIZ KÜTÜPHANESİ VE ÖZEL STİLLER === -->
+@section Styles {
+    <!-- Font Awesome (YILDIZ İKONLARI İÇİN KESİNLİKLE GEREKLİ) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+    <!-- Bootstrap Star Rating CSS -->
+    <link href="https://cdn.jsdelivr.net/gh/kartik-v/bootstrap-star-rating@4.1.2/css/star-rating.min.css" media="all" rel="stylesheet" type="text/css" />
+
+    <!-- Özel Stil -->
+    <style>
+        .theme-dark .card {
+            background-color: #212529;
+            border-color: #343a40;
+            color: #f8f9fa;
+        }
+
+        .theme-dark .form-control {
+            background-color: #343a40;
+            border-color: #495057;
+            color: #f8f9fa;
+        }
+
+            .theme-dark .form-control::placeholder {
+                color: #6c757d;
+            }
+
+        .theme-dark .text-muted {
+            color: #adb5bd !important;
+        }
+
+        /* YILDIZLAR İÇİN EZİCİ (OVERRIDE) STİLLER */
+        .rating-container .star {
+            font-size: 1.5rem !important; /* Boyutu zorla ayarla */
+            color: #495057 !important; /* Boş yıldız rengini zorla ayarla */
+            text-shadow: none !important; /* Gölgeyi kaldır */
+        }
+
+        .rating-container .filled-stars .star {
+            color: #ffc107 !important; /* Dolu yıldız rengini (altın sarısı) zorla ayarla */
+        }
+
+        .rating-container .rating-stars {
+            text-shadow: none !important;
+        }
+
+        .caption {
+            color: #adb5bd !important;
+        }
+    </style>
+}
+
+<div class="container mt-5 theme-dark">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <!-- ... (Sayfanın üst kısmı aynı kalıyor) ... -->
+            <img src="@(string.IsNullOrEmpty(Model.Cabin.ImageUrl) ? "/images/placeholder.jpg" : Model.Cabin.ImageUrl)" class="img-fluid rounded shadow-lg mb-4" alt="Image of @Model.Cabin.Description">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <div>
+                    <h1 class="display-5 fw-bold text-white">@Model.Cabin.Description</h1>
+                    <p class="lead text-muted"><i class="fas fa-map-marker-alt me-2"></i>@Model.Cabin.District.Name, @Model.Cabin.District.City.Name</p>
+                </div>
+                <div class="text-end">
+                    <h3 class="fw-light text-primary">@Model.Cabin.PricePerHour.ToString("C") / saat</h3>
+                </div>
+            </div>
+            <div class="d-flex align-items-center mb-4">
+                <input class="rating" value="@Model.Cabin.AverageRating.ToString("F1").Replace(',', '.')" data-size="md" data-display-only="true">
+                <span class="ms-3 text-muted fs-5">(@Model.Cabin.AverageRating.ToString("F1") / 5) - @Model.Cabin.TotalReviews yorum</span>
+            </div>
+            <div class="d-grid gap-2 mb-5">
+                <a asp-action="Create" asp-route-id="@Model.Cabin.Id" class="btn btn-primary btn-lg">Bu Kabini Kirala</a>
+            </div>
+            <hr class="my-5" style="border-color: #495057;" />
+            <h2 class="mb-4 fw-light text-white">Yorumlar (@Model.Cabin.TotalReviews)</h2>
+
+            <!-- Yorum Formu -->
+            @if (Model.CanUserReview)
+            {
+                <div class="card border-0 shadow-sm mb-5">
+                    <div class="card-body p-4">
+                        <h5 class="card-title mb-3">Yorum Bırakın</h5>
+                        <form asp-action="AddReview" method="post">
+                            <input type="hidden" name="cabinId" value="@Model.Cabin.Id" />
+                            @Html.AntiForgeryToken()
+                            <div class="mb-3">
+                                <label for="input-rating" class="form-label">Puanınız</label>
+                                <input id="input-rating" name="rating" class="rating" data-min="0" data-max="5" data-step="0.5">
+                            </div>
+                            <div class="mb-3">
+                                <label for="content" class="form-label">Yorumunuz</label>
+                                <textarea name="content" class="form-control" rows="4" placeholder="Deneyimlerinizi paylaşın..." required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-success">Yorumu Gönder</button>
+                        </form>
+                    </div>
+                </div>
+            }
+
+            <!-- ... (Yorum listesi kısmı aynı kalıyor) ... -->
+            @if (Model.Reviews.Any())
+            {
+                foreach (var review in Model.Reviews)
+                {
+                    <div class="d-flex mb-4">
+                        <div class="ms-3 flex-grow-1">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h6 class="fw-bold mb-0 text-white">@review.UserName</h6>
+                                <small class="text-muted">@review.ReviewDate.ToString("dd MMMM yyyy")</small>
+                            </div>
+                            <input class="rating" value="@review.Rating.ToString("F1").Replace(',', '.')" data-size="sm" data-display-only="true">
+                            <p class="card-text mt-2 mb-0 text-white">@review.Content</p>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="text-center text-muted p-4"><p>Bu kabin için henüz yorum yapılmamış. İlk yorumu siz yapın!</p></div>
+            }
+
+        </div>
+    </div>
+</div>
+
+
+<!-- === YILDIZ KÜTÜPHANESİ İÇİN GEREKLİ SCRIPTLER === -->
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/kartik-v/bootstrap-star-rating@4.1.2/js/star-rating.min.js" type="text/javascript"></script>
+    <script src="https://cdn.jsdelivr.net/gh/kartik-v/bootstrap-star-rating@4.1.2/js/locales/tr.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            // Font Awesome 6 ikonlarını kullanarak yıldızları başlat
+            var starOptions = {
+                language: 'tr',
+                theme: 'krajee-fa6', // Font Awesome 6 için doğru tema
+                emptyStar: '<i class="far fa-star"></i>',
+                filledStar: '<i class="fas fa-star"></i>',
+                starCaptions: {
+                    0.5: 'Çok Kötü', 1: 'Kötü', 1.5: 'Eh İşte', 2: 'İdare Eder', 2.5: 'Ortalama',
+                    3: 'Fena Değil', 3.5: 'İyi', 4: 'Çok İyi', 4.5: 'Harika', 5: 'Mükemmel!'
+                },
+                starCaptionClasses: function (val) {
+                    if (val <= 2) { return 'text-danger'; }
+                    else if (val <= 3) { return 'text-warning'; }
+                    else if (val <= 4) { return 'text-primary'; }
+                    else { return 'text-success'; }
+                }
+            };
+
+            // Sadece gösterim amaçlı yıldızları başlat
+            $('.rating[data-display-only="true"]').rating($.extend({}, starOptions, {
+                displayOnly: true,
+                step: 0.1
+            }));
+
+            // Yorum formundaki tıklanabilir yıldızları başlat
+            $('#input-rating').rating($.extend({}, starOptions, {
+                step: 0.5,
+                size: 'md'
+            }));
+        });
+    </script>
+}

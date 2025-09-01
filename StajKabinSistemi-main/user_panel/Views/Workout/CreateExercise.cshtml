@@ -1,0 +1,74 @@
+﻿@model ExerciseCreateViewModel
+
+@{
+    ViewData["Title"] = "Create Exercise";
+}
+
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-md-10 col-lg-8">
+            <div class="card shadow-sm bg-dark mb-4">
+                <div class="card-header">
+                    <h2 class="text-white mb-0">Create Exercise</h2>
+                </div>
+                <div class="card-body">
+                    <form asp-action="CreateExercise" method="post">
+                        <div class="form-group mb-3">
+                            <label class="text-white">Exercise Name</label>
+                            <input asp-for="ExerciseName" class="form-control" />
+                            <span asp-validation-for="ExerciseName" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label class="text-white">Exercise Details</label>
+                            <textarea asp-for="ExerciseDetails" class="form-control" rows="4"></textarea>
+                            <span asp-validation-for="ExerciseDetails" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label class="text-white">Steps</label>
+                            <div id="step-list" class="mb-2"></div>
+                            <button type="button" class="btn btn-sm btn-secondary" onclick="addStep()">+ Add Step</button>
+                        </div>
+
+                        <div class="d-flex justify-content-between mt-4">
+                            <a asp-action="Index" asp-controller="Exercise" class="btn btn-secondary">Back</a>
+                            <button type="submit" class="btn btn-primary px-4">Create Exercise</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        let stepIndex = 0;
+
+        function addStep() {
+            const stepInput = `
+                <div class="input-group mb-2">
+                    <input name="HowToDoSteps[${stepIndex}]" class="form-control"
+                           data-val="true" data-val-required="Adım boş bırakılamaz." />
+                    <button type="button" class="btn btn-outline-danger" onclick="removeStep(this)">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </div>`;
+
+            document.getElementById("step-list").insertAdjacentHTML('beforeend', stepInput);
+            stepIndex++;
+        }
+
+        function removeStep(button) {
+            button.closest('.input-group').remove();
+        }
+
+        // Add initial step when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            addStep();
+        });
+    </script>
+}

@@ -1,0 +1,72 @@
+﻿@model List<ExercisePreviewViewModel>
+
+@{
+    ViewData["Title"] = "Manage Exercises";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/adminIndex.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-papXQ7+I5Zz+..." crossorigin="anonymous" referrerpolicy="no-referrer" />
+}
+
+<div class="container">
+    <div class="card-custom">
+        <h2><i class="fa-solid fa-dumbbell"></i> Manage Exercises</h2>
+        <h4 class="mt-4">Edit or delete existing exercises</h4>
+
+        @if (TempData["StatusMessage"] != null)
+        {
+            <div class="alert alert-success mt-3" role="alert">
+                @TempData["StatusMessage"]
+            </div>
+        }
+
+        <table class="table table-striped table-dark mt-4">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Exercise Name</th>
+                    <th class="text-center">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < Model.Count; i++)
+                {
+                    var exercise = Model[i];
+                    <tr>
+                        <td>@(i + 1)</td>
+                        <td>@exercise.ExerciseName</td>
+                        <td class="text-center d-flex justify-content-center gap-2">
+
+                            <a asp-action="UpdateExercise"
+                               asp-controller="Workout"
+                               asp-route-exerciseId="@exercise.ExerciseId"
+                               class="btn btn-sm btn-primary">
+                                <i class="fa-solid fa-pen-to-square"></i> Edit
+                            </a>
+
+                            <form asp-action="DeleteExercise"
+                                  asp-controller="Workout"
+                                  method="post"
+                                  onsubmit="return confirm('Are you sure you want to delete this exercise?');">
+                                <input type="hidden" name="exerciseId" value="@exercise.ExerciseId" />
+                                <button type="submit" class="btn btn-sm btn-danger">
+                                    <i class="fa-solid fa-trash"></i> Delete
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <div class="mt-4">
+            <a asp-action="CreateExercise" asp-controller="Workout" class="btn btn-success">
+                <i class="fa-solid fa-plus"></i> Add New Exercise
+            </a>
+            <a asp-action="Index" asp-controller="Admin" class="btn btn-secondary ms-2">
+                <i class="fa-solid fa-arrow-left"></i> Back to Admin Panel
+            </a>
+        </div>
+    </div>
+</div>

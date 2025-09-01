@@ -1,0 +1,67 @@
+﻿@model IEnumerable<user_panel.ViewModels.BookingViewModel>
+
+@{
+    ViewData["Title"] = "My Bookings";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/user-panel.css" asp-append-version="true" />
+    <!-- YENİ: Sadece bu sayfa için gerekli özel stil -->
+    <style>
+        .table-custom-dark {
+            color: #f8f9fa; /* Tüm metin rengini beyaza yakın bir renge ayarla */
+        }
+
+            .table-custom-dark th {
+                border-bottom-width: 2px;
+                border-color: #495057;
+            }
+    </style>
+}
+
+<div class="container container-main-large">
+    <div class="card-custom">
+        <h2 class="text-center">@ViewData["Title"]</h2>
+        <p class="text-center text-muted mb-4">Here is a list of all your past and upcoming reservations (Times are shown in Turkey Time Zone).</p>
+
+        @if (Model.Any())
+        {
+            <div class="table-responsive">
+                <!-- DEĞİŞİKLİK: 'table-hover table-dark-custom' yerine yeni stil sınıfını kullanıyoruz -->
+                <table class="table table-hover table-custom-dark">
+                    <thead>
+                        <tr>
+                            <th>Location</th>
+                            <th>Date</th>
+                            <th>Start Time</th>
+                            <th>End Time</th>
+                            <th>Total Price</th>
+                            <th class="text-center">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var booking in Model)
+                        {
+                            <tr>
+                                <td>@booking.CabinLocation</td>
+                                <td>@booking.StartTime.ToString("dd MMMM yyyy")</td>
+                                <td>@booking.StartTime.ToString("HH:mm")</td>
+                                <td>@booking.EndTime.ToString("HH:mm")</td>
+                                <td>@booking.TotalPrice.ToString("C")</td>
+                                <td class="text-center">
+                                    <span class="badge @booking.StatusBadgeClass">@booking.CurrentStatus</span>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-info text-center">
+                You have no bookings yet. <a asp-action="Index" asp-controller="Booking" class="alert-link">Why not make one?</a>
+            </div>
+        }
+    </div>
+</div>

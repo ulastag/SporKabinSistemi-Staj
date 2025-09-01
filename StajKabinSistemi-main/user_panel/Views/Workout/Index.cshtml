@@ -1,0 +1,43 @@
+﻿@model user_panel.Entity.WorkoutPlan
+
+@{
+    ViewData["Title"] = Model.WorkoutName;
+}
+
+<div class="container mt-4">
+    <h2 class="text-white text-center mb-3">@Model.WorkoutName</h2>
+    <p class="text-light text-center">@Model.WorkoutDetails</p>
+    <hr class="bg-light" />
+
+    <div class="row justify-content-center">
+        @foreach (var we in Model.WorkoutExercises)
+        {
+            var exercise = we.Exercise;
+
+            <div class="col-md-8 mb-4">
+                <div class="card" style="background-color: #2c2f33; color: white;">
+                    <div class="card-body">
+                        <h4 class="card-title">@exercise.ExerciseName</h4>
+                        <p class="card-text">@exercise.ExerciseDetails</p>
+
+                        @if (exercise.HowToDos != null && exercise.HowToDos.Any())
+                        {
+                            <ul class="list-group list-group-flush">
+                                @foreach (var step in exercise.HowToDos.OrderBy((s => s.HowToDoStep)))
+                                {
+                                    <li class="list-group-item" style="background-color: #23272a; color: white;">
+                                        @step.HowToDoStep
+                                    </li>
+                                }
+                            </ul>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="text-center mt-4 mb-5">
+        <a href="/" class="btn btn-primary btn-lg">← Back to Home</a>
+    </div>
+</div>

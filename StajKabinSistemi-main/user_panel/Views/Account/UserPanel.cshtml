@@ -1,0 +1,53 @@
+@using user_panel.Data
+@model ApplicationUser
+@{
+    ViewData["Title"] = "User Panel";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/user-panel.css" asp-append-version="true" />
+}
+
+<div class="container container-main-large">
+    <div class="card-custom">
+        <h2>Welcome, @Model.FirstName</h2>
+
+        @if (TempData["StatusMessage"] != null)
+        {
+            <div class="alert alert-success mt-3" role="alert">
+                @TempData["StatusMessage"]
+            </div>
+        }
+
+        <div class="credit-balance-box">
+            <div class="balance-label">CREDIT BALANCE</div>
+            <div class="balance-amount">@Model.CreditBalance.ToString("C")</div>
+            <a class="btn btn-success" asp-action="AddCredit">Add Credit</a>
+        </div>
+        <div class="mt-4 user-details">
+            <h5>Account Details</h5>
+            <hr />
+            <dl class="row">
+                <dt class="col-sm-4">Full Name</dt>
+                <dd class="col-sm-8">@Model.FirstName @Model.LastName</dd>
+                <dt class="col-sm-4">E-mail Address</dt>
+                <dd class="col-sm-8">@Model.Email</dd>
+                <dt class="col-sm-4">Phone Number</dt>
+                <dd class="col-sm-8">@Model.PhoneNumber</dd>
+            </dl>
+        </div>
+
+        <div class="mt-4 d-flex justify-content-start gap-2">
+            <button id="scanQrBtn" type="button" class="btn btn-primary mr-2" data-bs-toggle="modal" data-bs-target="#qrScannerModal">
+                Scan QR
+            </button>
+            <a class="btn btn-warning" asp-action="ChangePassword">Change Password</a>
+            <a class="btn btn-info" asp-action="UpdateInformation">Update Information</a>
+            <form class="d-inline" asp-action="Logout" method="post">
+                <button type="submit" class="btn btn-danger">Logout</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+@* ... (MODAL VE SCRIPTS KISIMLARINI DEĞİŞTİRMEYİN) ... *@

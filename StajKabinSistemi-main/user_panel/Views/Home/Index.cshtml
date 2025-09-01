@@ -1,0 +1,161 @@
+﻿@{
+    ViewData["Title"] = "Sport Cabin";
+    Layout = "_Layout";
+}
+
+<!-- Join Us Hero Banner -->
+<section class="text-white py-5"
+style="
+           background-image: url('/images/join_us.gif');
+           background-size: cover;
+           background-position: center;
+           min-height: 600px;
+           display: flex;
+           align-items: center;
+">
+    <div class="container text-center">
+        <h1 class="display-4">Join Us!</h1>
+        <p class="lead">Become part of our Sport Cabin community</p>
+        @if(!User.Identity.IsAuthenticated){
+            <a href="/Account/Register" class="btn btn-primary btn-lg mt-3">Learn More</a>
+        }
+        else
+        {
+            <a href="/Booking/Index" class="btn btn-primary btn-lg mt-3">Learn More</a>
+        }
+
+    </div>
+</section>
+<div class="my-content-section text-center" style="margin-top: 50px;">
+    <h2>About Sport Cabin</h2>
+    <p>
+        Sport Cabin is your one‑stop hub for everything sports: training guides,
+        community events, and curated tips to level up your game. Whether you're a
+        weekend warrior or a seasoned athlete, we've got resources for you.
+    </p>
+</div>
+<!-- Navigation Pills -->
+<nav class="container my-5">
+    <ul class="nav nav-pills justify-content-center" id="myNav">
+        <li class="nav-item">
+            <a class="nav-link" href="#" data-target="faq">FAQ</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#" data-target="tips">Tips</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#" data-target="plans">Plans</a>
+        </li>
+    </ul>
+</nav>
+
+<!-- Content Sections (only one visible at a time) -->
+<div class="container mb-5">
+    
+    <!--faq-->
+    <section id="faq" class="content-section">
+        <h2>Frequently Asked Questions</h2>
+        <p>
+            <strong>What is Sport Cabin?</strong><br />
+            It’s a community-driven portal for sports enthusiasts—guides, tips, and
+            cabin rentals all in one place.
+        </p>
+    </section>
+    <!--Tips-->
+    <section id="tips" class="content-section">
+        <h2 class="mb-4 text-white">Top Tips</h2>
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="card h-100" style="background-color: #3d3d45; border-color: var(--border-color);">
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title text-white"> Stay Hydrated</h5>
+                        <p class="card-text text-light">
+                            Drink water before, during, and after exercise to maintain peak performance.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 mb-4">
+                <div class="card h-100" style="background-color: #3d3d45; border-color: var(--border-color);">
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title text-white"> Warm Up</h5>
+                        <p class="card-text text-light">
+                            Always warm up your muscles properly to avoid injuries and boost mobility.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 mb-4">
+                <div class="card h-100" style="background-color: #3d3d45; border-color: var(--border-color);">
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title text-white"> Set Goals</h5>
+                        <p class="card-text text-light">
+                            Set realistic goals, track your progress, and celebrate small wins.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!--Workout Plans-->
+    <section id="plans" class="content-section">
+        <h2>Workout Plans</h2>
+        @await Component.InvokeAsync("WorkoutCard")
+    </section>
+
+</div>
+
+<div id="my_cabins" class="ny-content-section" style="padding: 0 60px; margin-top: 60px;">
+    <h2>Our Sport Cabins</h2>
+    @await Component.InvokeAsync("Cabin")
+</div>
+
+@section Styles {
+    <style>
+        .content-section {
+            display: None;
+        }
+        /* Show the first section by default */
+        .content-section#faq {
+            display: block;
+        }
+
+        .tips-list {
+            padding: 10px 10px; /* üst-alt boşluk */
+        }
+
+        .tip-item {
+            margin-bottom: 8px;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const links    = document.querySelectorAll('#myNav .nav-link');
+            const sections = document.querySelectorAll('.content-section');
+
+            function showSection(id) {
+                sections.forEach(s => {
+                    s.style.display = (s.id === id) ? 'block' : 'none';
+                });
+            }
+
+            links.forEach(link => {
+                link.addEventListener('click', e => {
+                    e.preventDefault();
+                    links.forEach(l => l.classList.remove('active'));
+                    link.classList.add('active');
+                    showSection(link.dataset.target);
+                });
+            });
+
+
+            const initTarget = document.querySelector('#myNav .nav-link.active').dataset.target;
+            showSection(initTarget);
+        });
+    </script>
+}

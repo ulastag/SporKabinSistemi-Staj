@@ -1,0 +1,68 @@
+@{
+    ViewData["Title"] = "Admin Panel Dashboard";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/adminIndex.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-papXQ7+I5Zz+..." crossorigin="anonymous" referrerpolicy="no-referrer" />
+}
+
+<div class="container">
+    <div class="card-custom">
+        <h2><i class="fa-solid fa-user-shield"></i> Admin Access</h2>
+        <h4 class="mt-4">Welcome, Admin</h4>
+
+        @if (TempData["StatusMessage"] != null)
+        {
+            <div class="alert alert-success mt-3" role="alert">
+                @TempData["StatusMessage"]
+            </div>
+        }
+
+        <div class="mt-4">
+            <h5>Admin Options:</h5>
+
+            <div class="admin-options-grid">
+
+                <a asp-action="AddCabin" asp-controller="Admin" class="option-card">
+                    <i class="fa-solid fa-plus-square fa-2x"></i>
+                    <span>Add New Cabin</span>
+                </a>
+
+                <a asp-action="UpdateCabin" asp-controller="Admin" class="option-card">
+                    <i class="fa-solid fa-pen-to-square fa-2x"></i>
+                    <span>Update Cabins</span>
+                </a>
+
+                <a asp-action="ManageUser" asp-controller="Admin" class="option-card">
+                    <i class="fa-solid fa-users-cog fa-2x"></i>
+                    <span>Manage Users</span>
+                </a>
+
+                <a asp-action="ManageBookings" asp-controller="Admin" class="option-card">
+                    <i class="fa-solid fa-calendar-check fa-2x"></i>
+                    <span>Manage Bookings</span>
+                </a>
+
+                <a asp-action="ViewLogs" asp-controller="Admin" class="option-card">
+                    <i class="fa-solid fa-file-alt fa-2x"></i>
+                    <span>View Logs</span>
+                </a>
+
+                <a asp-action="Create" asp-controller="Workout" class="option-card">
+                    <i class="fa-solid fa-dumbbell fa-2x"></i>
+                    <span>Create Workout Plans</span>
+                </a>
+                <a asp-action="CreateExercise" asp-controller="Workout" class="option-card">
+                    <i class="fa-solid fa-dumbbell fa-2x"></i>
+                    <span>Create Exercise </span>
+                </a>
+                 <a asp-action="ManageExercise" asp-controller="Workout" class="option-card">
+                    <i class="fa-solid fa-dumbbell fa-2x"></i>
+                    <span>Manage Exercise </span>
+                </a>
+
+            </div>
+        </div>
+    </div>
+</div>
